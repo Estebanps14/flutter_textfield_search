@@ -53,8 +53,8 @@ class TextFieldSearch extends StatefulWidget {
   /// The number of matched items that are viewable in results
   final int itemsInView;
 
-  /// On submitted function used in the text fiel widget
-  final Function(String)? onSubmitted;
+  /// On submitted function used in the text field widget
+  final Function onSubmittedInFunction;
 
   /// Creates a TextFieldSearch for displaying selected elements and retrieving a selected element
   const TextFieldSearch(
@@ -65,8 +65,8 @@ class TextFieldSearch extends StatefulWidget {
       this.textStyle,
       this.future,
       this.getSelectedValue,
-      this.onSubmitted,
       this.decoration,
+      required this.onSubmittedInFunction,
       this.scrollbarDecoration,
       this.itemsInView = 3,
       this.minStringLength = 2})
@@ -391,7 +391,18 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
             ? widget.decoration
             : InputDecoration(labelText: widget.label),
         style: widget.textStyle,
-        onSubmitted: widget.onSubmitted,
+        onSubmitted: (String value){
+          _debouncer.run(() {
+            setState(() {
+              if (hasFuture) {
+                updateGetItems();
+              } else {
+                updateList();
+              }
+            });
+          });
+          widget.onSubmittedInFunction!();
+        },
         onChanged: (String value) {
           // every time we make a change to the input, update the list
           _debouncer.run(() {
