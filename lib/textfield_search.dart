@@ -1,9 +1,30 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+class FieldSearchItem {
+  final String label;
+  final dynamic value;
+
+  const FieldSearchItem({
+    required this.label,
+    required this.value,
+  });
+
+  factory FieldSearchItem.fromJson(Map<String, dynamic> json) {
+    return FieldSearchItem(
+        label: json['label'],
+        value: json['value']
+    );
+  }
+
+  String toLowerCase(){
+    return label.toLowerCase();
+  }
+}
+
 class TextFieldSearch extends StatefulWidget {
   /// A default list of values that can be used for an initial list of elements to select from
-  final List? initialList;
+  final List<FieldSearchItem>? initialList;
 
   /// A string used for display of the selectable elements
   final String label;
@@ -32,6 +53,9 @@ class TextFieldSearch extends StatefulWidget {
   /// The number of matched items that are viewable in results
   final int itemsInView;
 
+  /// On submitted function used in the text fiel widget
+  final Function(String)? onSubmitted;
+
   /// Creates a TextFieldSearch for displaying selected elements and retrieving a selected element
   const TextFieldSearch(
       {Key? key,
@@ -41,6 +65,7 @@ class TextFieldSearch extends StatefulWidget {
       this.textStyle,
       this.future,
       this.getSelectedValue,
+      this.onSubmitted,
       this.decoration,
       this.scrollbarDecoration,
       this.itemsInView = 3,
@@ -366,6 +391,7 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
             ? widget.decoration
             : InputDecoration(labelText: widget.label),
         style: widget.textStyle,
+        onSubmitted: widget.onSubmitted,
         onChanged: (String value) {
           // every time we make a change to the input, update the list
           _debouncer.run(() {
